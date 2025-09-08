@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Эмма: Полный ответ</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; color: #333; }
+        .response { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); white-space: pre-wrap; }
+        h1 { color: #FF69B4; text-align: center; }
+        button { background: #FF69B4; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>💕 Полный ответ от Эммы</h1>
+    <div id="response" class="response">Загрузка...</div>
+    <button onclick="Telegram.WebApp.close()">Закрыть</button>
+
+    <script>
+        // Извлекаем текст из URL параметра
+        const urlParams = new URLSearchParams(window.location.search);
+        const fullText = decodeURIComponent(urlParams.get('full_text') || 'Текст не найден 😔');
+        document.getElementById('response').innerHTML = fullText;
+
+        // Инициализация Telegram Web App
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand(); // Расширяем на весь экран
+    </script>
+</body>
+</html>
