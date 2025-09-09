@@ -20,7 +20,6 @@
             --gradient: linear-gradient(135deg, #6e8efb, #a777e3);
             --pink: #ff69b4;
             --blue: #1e90ff;
-            --heart-gradient: linear-gradient(135deg, #ff6b6b, #ff8e53); /* Градиент для сердечек */
         }
 
         [data-theme="dark"] {
@@ -32,7 +31,7 @@
         }
 
         body {
-            font-family: 'Lora', serif; /* Элегантный шрифт с засечками */
+            font-family: 'Lora', serif;
             margin: 0;
             padding: 20px;
             background: var(--bg-color, var(--bg-light));
@@ -48,30 +47,26 @@
             background: var(--container-bg, white);
             padding: 20px;
             border-radius: 15px;
-            box-shadow: var(--shadow), 0 0 0 2px rgba(0, 0, 0, 0.05); /* Тень и лёгкий контур */
+            box-shadow: var(--shadow), 0 0 0 2px rgba(0, 0, 0, 0.05);
             position: relative;
             min-height: 400px;
         }
 
         h1 {
-            font-family: 'Playfair Display', serif; /* Премиум-шрифт для заголовка */
+            font-family: 'Playfair Display', serif;
             font-size: 2em;
             color: var(--pink);
             text-align: center;
             margin-bottom: 20px;
             font-weight: 700;
-            letter-spacing: 1px; /* Лёгкая динамика */
+            letter-spacing: 1px;
         }
 
         h1::before {
-            content: "💞💞"; /* Премиум-сердечки с градиентом */
+            content: "💕💕"; /* Вернули исходные сердечки */
             font-size: 1.4em;
             margin-right: 8px;
-            background: var(--heart-gradient);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            color: var(--pink);
         }
 
         #themeToggle {
@@ -102,7 +97,8 @@
             border-radius: 10px;
             min-height: 300px;
             color: var(--text-color);
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1); /* Внутренняя тень для объёма */
+            font-weight: 500; /* Сохранили чуть жирный шрифт */
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         [data-theme="dark"] #fullText {
@@ -113,7 +109,7 @@
             display: block;
             margin: 20px auto 0;
             background: var(--blue);
-            padding: 12px 40px; /* Ещё шире */
+            padding: 12px 40px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
@@ -132,7 +128,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Полный ответ от Эммы</h1>
+        <h1>💕 Полный ответ от Эммы</h1>
         <button id="themeToggle"><i class="fas fa-moon"></i></button>
         <div id="fullText">Загрузка...</div>
         <button class="close-btn" onclick="Telegram.WebApp.close()">Закрыть</button>
