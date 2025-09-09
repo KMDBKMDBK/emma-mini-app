@@ -36,7 +36,7 @@
             padding: 20px;
             background: var(--bg-color, var(--bg-light));
             color: var(--text-color, var(--text-light));
-            transition: all 0.3s ease;
+            transition: background 0.3s ease, color 0.3s ease, filter 0.3s ease;
             height: 100vh;
             overflow-y: auto;
         }
@@ -50,6 +50,17 @@
             box-shadow: var(--shadow), 0 0 0 2px rgba(0, 0, 0, 0.05);
             position: relative;
             min-height: 400px;
+            transition: opacity 0.3s ease, background 0.3s ease;
+        }
+
+        /* Класс для анимации затухания */
+        .fade-out {
+            opacity: 0;
+        }
+
+        /* Класс для анимации размытия */
+        .blur {
+            filter: blur(5px);
         }
 
         h1 {
@@ -63,7 +74,7 @@
         }
 
         h1::before {
-            content: "💕💕"; /* Вернули исходные сердечки */
+            content: "💕💕";
             font-size: 1.4em;
             margin-right: 8px;
             color: var(--pink);
@@ -82,12 +93,17 @@
             font-size: 1.2em;
             color: var(--text-color);
             box-shadow: var(--shadow);
-            transition: all 0.3s ease;
+            transition: all 0.3s ease, transform 0.3s ease;
         }
 
         #themeToggle:hover {
             background: var(--button-hover, var(--button-hover-light));
             transform: scale(1.1);
+        }
+
+        /* Класс для анимации вращения иконки */
+        .rotate {
+            transform: rotate(360deg);
         }
 
         #fullText {
@@ -97,17 +113,18 @@
             border-radius: 10px;
             min-height: 300px;
             color: var(--text-color);
-            font-weight: 500; /* Сохранили чуть жирный шрифт */
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            font-weight: 600; /* Увеличен вес шрифта */
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.15); /* Увеличена тень */
         }
 
         [data-theme="dark"] #fullText {
             background: rgba(30, 30, 30, 0.9);
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3); /* Увеличена тень для тёмной темы */
         }
 
-        button.close-btn {
-            display: block;
-            margin: 20px auto 0;
+        button.close-btn, button.copy-btn {
+            display: inline-block;
+            margin: 20px 10px 0;
             background: var(--blue);
             padding: 12px 40px;
             border: none;
@@ -118,11 +135,19 @@
             font-weight: 500;
             font-family: 'Lora', serif;
             transition: all 0.3s ease;
+            width: 150px;
+            text-align: center;
         }
 
-        button.close-btn:hover {
+        button.close-btn:hover, button.copy-btn:hover {
             background: #104e8b;
             transform: translateY(-2px);
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
         }
     </style>
 </head>
@@ -131,7 +156,10 @@
         <h1>💕 Полный ответ от Эммы</h1>
         <button id="themeToggle"><i class="fas fa-moon"></i></button>
         <div id="fullText">Загрузка...</div>
-        <button class="close-btn" onclick="Telegram.WebApp.close()">Закрыть</button>
+        <div class="button-container">
+            <button class="copy-btn" onclick="copyText()">Копировать</button>
+            <button class="close-btn" onclick="Telegram.WebApp.close()">Закрыть</button>
+        </div>
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -150,20 +178,53 @@
             document.getElementById('fullText').innerText = "Текст не передан. Пожалуйста, попробуйте снова.";
         }
 
+        // Функция копирования текста
+        function copyText() {
+            const text = document.getElementById('fullText').innerText;
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    const copyBtn = document.querySelector('.copy-btn');
+                    copyBtn.innerText = 'Скопировано!';
+                    setTimeout(() => {
+                        copyBtn.innerText = 'Копировать';
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Ошибка копирования:', err);
+                    document.getElementById('fullText').innerText = 'Ошибка при копировании текста.';
+                });
+        }
+
         // Управление темой
         const body = document.body;
+        const container = document.querySelector('.container');
         const themeToggle = document.getElementById('themeToggle');
         let currentTheme = localStorage.getItem('theme') || 'light';
 
         function setTheme(theme) {
-            if (theme === 'dark') {
-                body.setAttribute('data-theme', 'dark');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            } else {
-                body.removeAttribute('data-theme');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-            }
-            localStorage.setItem('theme', theme);
+            // Добавляем размытие и затухание перед сменой темы
+            body.classList.add('blur');
+            container.classList.add('fade-out');
+            themeToggle.classList.add('rotate');
+
+            setTimeout(() => {
+                // Меняем тему
+                if (theme === 'dark') {
+                    body.setAttribute('data-theme', 'dark');
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    body.removeAttribute('data-theme');
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+                localStorage.setItem('theme', theme);
+
+                // Убираем эффекты
+                setTimeout(() => {
+                    body.classList.remove('blur');
+                    container.classList.remove('fade-out');
+                    themeToggle.classList.remove('rotate');
+                }, 300);
+            }, 300);
         }
 
         // Устанавливаем тему при загрузке
