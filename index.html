@@ -1,99 +1,107 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Полный ответ от Эммы</title>
-    <style>
-        :root {
-            --bg-color: #f0f0f0;
-            --text-color: #333;
-            --button-bg: #0088cc;
-            --button-hover: #006bb3;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Полный ответ от Эммы</title>
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --button-bg: #0088cc;
+            --button-hover: #006bb3;
+        }
 
-        [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --text-color: #e0e0e0;
-            --button-bg: #0099e6;
-            --button-hover: #0077b3;
-        }
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --button-bg: #0099e6;
+            --button-hover: #0077b3;
+        }
 
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
 
-        .content {
-            max-width: 600px;
-            margin: 0 auto;
-        }
+        .content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-        button {
-            background-color: var(--button-bg);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            margin-right: 10px;
-        }
+        button {
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
 
-        button:hover {
-            background-color: var(--button-hover);
-        }
+        button:hover {
+            background-color: var(--button-hover);
+        }
 
-        #themeToggle {
-            background-color: var(--button-bg);
-        }
-    </style>
+        #themeToggle {
+            background-color: var(--button-bg);
+        }
+    </style>
 </head>
 <body>
-    <div class="content">
-        <h1>💕 Полный ответ от Эммы</h1>
-        <button id="themeToggle">Переключить тему 🌙</button>
-        <div id="fullText">Загрузка...</div>
-        <button onclick="Telegram.WebApp.close()">Закрыть</button>
-    </div>
+    <div class="content">
+        <h1>💕 Полный ответ от Эммы</h1>
+        <button id="themeToggle">Переключить тему 🌙</button>
+        <div id="fullText">Загрузка...</div>
+        <button onclick="Telegram.WebApp.close()">Закрыть</button>
+    </div>
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const fullText = urlParams.get('full_text');
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // Получаем параметры из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const responseId = urlParams.get('response_id');
+        const userId = urlParams.get('user_id');
+        const fullText = urlParams.get('full_text');
 
-        if (fullText) {
-            const decodedText = decodeURIComponent(fullText);
-            document.getElementById('fullText').innerText = decodedText || "Текст не найден.";
-        } else {
-            document.getElementById('fullText').innerText = "Текст не передан. Пожалуйста, попробуйте снова.";
-        }
+        // Отображаем текст, если он передан
+        if (fullText) {
+            const decodedText = decodeURIComponent(fullText);
+            document.getElementById('fullText').innerText = decodedText || "Текст не найден.";
+        } else {
+            document.getElementById('fullText').innerText = "Текст не передан. Пожалуйста, попробуйте снова.";
+        }
 
-        const body = document.body;
-        const themeToggle = document.getElementById('themeToggle');
-        let currentTheme = localStorage.getItem('theme') || 'light';
+        // Управление темой
+        const body = document.body;
+        const themeToggle = document.getElementById('themeToggle');
+        let currentTheme = localStorage.getItem('theme') || 'light';
 
-        function setTheme(theme) {
-            if (theme === 'dark') {
-                body.setAttribute('data-theme', 'dark');
-                themeToggle.textContent = 'Переключить на светлую 🌞';
-            } else {
-                body.removeAttribute('data-theme');
-                themeToggle.textContent = 'Переключить на тёмную 🌙';
-            }
-            localStorage.setItem('theme', theme);
-        }
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                body.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = 'Переключить на светлую 🌞';
+            } else {
+                body.removeAttribute('data-theme');
+                themeToggle.textContent = 'Переключить на тёмную 🌙';
+            }
+            localStorage.setItem('theme', theme);
+        }
 
-        setTheme(currentTheme === 'dark' ? 'dark' : 'light');
+        // Устанавливаем тему при загрузке
+        setTheme(currentTheme === 'dark' ? 'dark' : 'light');
 
-        themeToggle.addEventListener('click', () => {
-            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-            setTheme(currentTheme);
-        });
+        // Переключение темы при клике
+        themeToggle.addEventListener('click', () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(currentTheme);
+        });
 
-        Telegram.WebApp.ready();
-    </script>
+        // Закрытие при нажатии кнопки
+        Telegram.WebApp.ready();
+    </script>
 </body>
 </html>
