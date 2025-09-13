@@ -53,12 +53,10 @@
             transition: opacity 0.3s ease, background 0.3s ease;
         }
 
-        /* Класс для анимации затухания */
         .fade-out {
             opacity: 0;
         }
 
-        /* Класс для анимации размытия */
         .blur {
             filter: blur(5px);
         }
@@ -101,7 +99,6 @@
             transform: scale(1.1);
         }
 
-        /* Класс для анимации вращения иконки */
         .rotate {
             transform: rotate(360deg);
         }
@@ -113,13 +110,14 @@
             border-radius: 10px;
             min-height: 300px;
             color: var(--text-color);
-            font-weight: 600; /* Увеличен вес шрифта */
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.15); /* Увеличена тень */
+            font-weight: 600;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.15);
+            white-space: pre-wrap; /* Сохраняет переносы строк */
         }
 
         [data-theme="dark"] #fullText {
             background: rgba(30, 30, 30, 0.9);
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3); /* Увеличена тень для тёмной темы */
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3);
         }
 
         button.close-btn, button.copy-btn {
@@ -166,16 +164,23 @@
     <script>
         // Получаем параметры из URL
         const urlParams = new URLSearchParams(window.location.search);
-        const responseId = urlParams.get('response_id');
-        const userId = urlParams.get('user_id');
-        const fullText = urlParams.get('full_text');
+        const encodedText = urlParams.get('text');
 
         // Отображаем текст, если он передан
-        if (fullText) {
-            const decodedText = decodeURIComponent(fullText);
-            document.getElementById('fullText').innerText = decodedText || "Текст не найден.";
+        const fullTextDiv = document.getElementById('fullText');
+        if (encodedText) {
+            try {
+                const text = atob(encodedText); // Декодируем base64
+                fullTextDiv.innerHTML = text; // Выводим с HTML-тегами
+                if (text.length > 1000) {
+                    fullTextDiv.innerHTML += '<br><br><i>(Текст укорочен, запроси подробнее у бота!)</i>';
+                }
+            } catch (e) {
+                fullTextDiv.innerText = 'Ошибка: не удалось загрузить текст. Попробуй ещё раз!';
+                console.error('Ошибка декодирования:', e);
+            }
         } else {
-            document.getElementById('fullText').innerText = "Текст не передан. Пожалуйста, попробуйте снова.";
+            fullTextDiv.innerText = 'Текст не передан. Отправь сообщение боту!';
         }
 
         // Функция копирования текста
@@ -191,7 +196,7 @@
                 })
                 .catch(err => {
                     console.error('Ошибка копирования:', err);
-                    document.getElementById('fullText').innerText = 'Ошибка при копировании текста.';
+                    fullTextDiv.innerText = 'Ошибка при копировании текста.';
                 });
         }
 
@@ -202,13 +207,11 @@
         let currentTheme = localStorage.getItem('theme') || 'light';
 
         function setTheme(theme) {
-            // Добавляем размытие и затухание перед сменой темы
             body.classList.add('blur');
             container.classList.add('fade-out');
             themeToggle.classList.add('rotate');
 
             setTimeout(() => {
-                // Меняем тему
                 if (theme === 'dark') {
                     body.setAttribute('data-theme', 'dark');
                     themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
@@ -218,7 +221,6 @@
                 }
                 localStorage.setItem('theme', theme);
 
-                // Убираем эффекты
                 setTimeout(() => {
                     body.classList.remove('blur');
                     container.classList.remove('fade-out');
@@ -227,16 +229,13 @@
             }, 300);
         }
 
-        // Устанавливаем тему при загрузке
         setTheme(currentTheme === 'dark' ? 'dark' : 'light');
 
-        // Переключение темы при клике
         themeToggle.addEventListener('click', () => {
             currentTheme = currentTheme === 'light' ? 'dark' : 'light';
             setTheme(currentTheme);
         });
 
-        // Закрытие при нажатии кнопки
         Telegram.WebApp.ready();
     </script>
 </body>
