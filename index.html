@@ -162,28 +162,30 @@
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        // Получаем параметры из URL
         const urlParams = new URLSearchParams(window.location.search);
         const encodedText = urlParams.get('text');
-
-        // Отображаем текст, если он передан
         const fullTextDiv = document.getElementById('fullText');
         if (encodedText) {
             try {
-                const text = atob(encodedText); // Декодируем base64
-                fullTextDiv.innerHTML = text; // Выводим с HTML-тегами
-                if (text.length > 1000) {
-                    fullTextDiv.innerHTML += '<br><br><i>(Текст укорочен, запроси подробнее у бота!)</i>';
+                // Очищаем от недопустимых символов
+                let cleanedEncodedText = encodedText.replace(/[^A-Za-z0-9+/=]/g, '');
+                // Добавляем padding, если нужно
+                if (cleanedEncodedText.length % 4 !== 0) {
+                    cleanedEncodedText += '='.repeat(4 - (cleanedEncodedText.length % 4));
+                }
+                const text = atob(cleanedEncodedText);
+                fullTextDiv.innerHTML = text;
+                if (text.length >= 500) {
+                    fullTextDiv.innerHTML += '<br><i>(Текст укорочен до 500 символов)</i>';
                 }
             } catch (e) {
                 fullTextDiv.innerText = 'Ошибка: не удалось загрузить текст. Попробуй ещё раз!';
-                console.error('Ошибка декодирования:', e);
+                console.error('Ошибка декодирования:', e, 'Исходный текст:', encodedText, 'Очищенный:', cleanedEncodedText);
             }
         } else {
             fullTextDiv.innerText = 'Текст не передан. Отправь сообщение боту!';
         }
 
-        // Функция копирования текста
         function copyText() {
             const text = document.getElementById('fullText').innerText;
             navigator.clipboard.writeText(text)
@@ -200,7 +202,6 @@
                 });
         }
 
-        // Управление темой
         const body = document.body;
         const container = document.querySelector('.container');
         const themeToggle = document.getElementById('themeToggle');
@@ -210,7 +211,6 @@
             body.classList.add('blur');
             container.classList.add('fade-out');
             themeToggle.classList.add('rotate');
-
             setTimeout(() => {
                 if (theme === 'dark') {
                     body.setAttribute('data-theme', 'dark');
@@ -220,7 +220,6 @@
                     themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
                 }
                 localStorage.setItem('theme', theme);
-
                 setTimeout(() => {
                     body.classList.remove('blur');
                     container.classList.remove('fade-out');
