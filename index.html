@@ -169,24 +169,34 @@
             try {
                 // Декодируем URL-encoded строку
                 const decodedUrlText = decodeURIComponent(encodedText);
-                console.log('URL-decoded base64:', decodedUrlText);
+                console.log('Исходный URL-параметр:', encodedText);
+                console.log('URL-декодированный base64:', decodedUrlText);
                 // Очищаем от недопустимых символов
                 let cleanedEncodedText = decodedUrlText.replace(/[^A-Za-z0-9+/=]/g, '');
                 console.log('Очищенный base64:', cleanedEncodedText);
-                // Добавляем padding
+                // Проверяем длину и padding
+                if (cleanedEncodedText.length === 0) {
+                    throw new Error('Base64 строка пустая после очистки');
+                }
                 if (cleanedEncodedText.length % 4 !== 0) {
                     cleanedEncodedText += '='.repeat(4 - (cleanedEncodedText.length % 4));
                 }
-                // Декодируем base64
+                // Декодируем base64 в строку
                 const text = atob(cleanedEncodedText);
                 console.log('Декодированный текст:', text);
+                // Проверяем, является ли текст валидным UTF-8
+                const decoder = new TextDecoder('utf-8', { fatal: true });
+                decoder.decode(new TextEncoder().encode(text)); // Проверка валидности
                 fullTextDiv.innerHTML = text;
                 if (text.length >= 500) {
                     fullTextDiv.innerHTML += '<br><i>(Текст укорочен до 500 символов)</i>';
                 }
             } catch (e) {
                 fullTextDiv.innerText = 'Ошибка: не удалось загрузить текст. Попробуй ещё раз!';
-                console.error('Ошибка декодирования:', e, 'Исходный base64:', encodedText, 'URL-decoded:', decodeURIComponent(encodedText), 'Очищенный:', cleanedEncodedText);
+                console.error('Ошибка декодирования:', e.message, 
+                              'Исходный URL-параметр:', encodedText, 
+                              'URL-декодированный:', decodedUrlText || 'не определено', 
+                              'Очищенный base64:', cleanedEncodedText || 'не определено');
             }
         } else {
             fullTextDiv.innerText = 'Текст не передан. Отправь сообщение боту!';
