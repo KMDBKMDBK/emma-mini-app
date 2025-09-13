@@ -112,7 +112,7 @@
             color: var(--text-color);
             font-weight: 600;
             box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.15);
-            white-space: pre-wrap; /* Сохраняет переносы строк */
+            white-space: pre-wrap;
         }
 
         [data-theme="dark"] #fullText {
@@ -167,20 +167,26 @@
         const fullTextDiv = document.getElementById('fullText');
         if (encodedText) {
             try {
+                // Декодируем URL-encoded строку
+                const decodedUrlText = decodeURIComponent(encodedText);
+                console.log('URL-decoded base64:', decodedUrlText);
                 // Очищаем от недопустимых символов
-                let cleanedEncodedText = encodedText.replace(/[^A-Za-z0-9+/=]/g, '');
-                // Добавляем padding, если нужно
+                let cleanedEncodedText = decodedUrlText.replace(/[^A-Za-z0-9+/=]/g, '');
+                console.log('Очищенный base64:', cleanedEncodedText);
+                // Добавляем padding
                 if (cleanedEncodedText.length % 4 !== 0) {
                     cleanedEncodedText += '='.repeat(4 - (cleanedEncodedText.length % 4));
                 }
+                // Декодируем base64
                 const text = atob(cleanedEncodedText);
+                console.log('Декодированный текст:', text);
                 fullTextDiv.innerHTML = text;
                 if (text.length >= 500) {
                     fullTextDiv.innerHTML += '<br><i>(Текст укорочен до 500 символов)</i>';
                 }
             } catch (e) {
                 fullTextDiv.innerText = 'Ошибка: не удалось загрузить текст. Попробуй ещё раз!';
-                console.error('Ошибка декодирования:', e, 'Исходный текст:', encodedText, 'Очищенный:', cleanedEncodedText);
+                console.error('Ошибка декодирования:', e, 'Исходный base64:', encodedText, 'URL-decoded:', decodeURIComponent(encodedText), 'Очищенный:', cleanedEncodedText);
             }
         } else {
             fullTextDiv.innerText = 'Текст не передан. Отправь сообщение боту!';
